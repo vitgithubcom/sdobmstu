@@ -33,4 +33,3 @@ jobs:
         
         # Синхронизируем все ветки и теги
         git push --mirror --force target
- 
