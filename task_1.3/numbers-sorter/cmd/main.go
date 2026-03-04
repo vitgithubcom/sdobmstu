@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"numbers-sorter/internal/logic"
 	"numbers-sorter/internal/service"
