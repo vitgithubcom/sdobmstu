@@ -129,3 +129,5 @@ git pull origin main
 - _**`git remote -v`**_ — Посмотреть подключенные удаленные репозитории
 
 :rocket:
+go run ./cmd/main.go
+git push github master
