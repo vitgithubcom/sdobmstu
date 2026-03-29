@@ -92,9 +92,13 @@ git pull origin main
 ### git push
 Назначение: Отправляет ваши локальные коммиты в удаленный репозиторий (например, на GitHub).
 
-Примеры:
-git push origin main
-git push github master
+<details>
+  <summary>Примеры:</summary>
+    <ul>
+        <li>git push origin main</li>
+        <li>git push github master</li>
+    </ul>
+</details>
 
 ---
 
@@ -103,12 +107,10 @@ git push github master
 
 ---
 
-<details>
-  <summary>### Список задач</summary>
-  - [x] Создать файл в формате MD
-  - [x] Заполнять по мере прохождения урока
-  - [ ] Закончить шпаргалку
-</details>
+### Список задач
+- [x] Создать файл в формате MD
+- [x] Заполнять по мере прохождения урока
+- [ ] Закончить шпаргалку
 
 ---
 
