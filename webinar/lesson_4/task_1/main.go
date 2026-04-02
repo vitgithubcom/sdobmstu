@@ -1,12 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 func main() {
-	const {
-		pi = 3.1415	
-		e = 2.72
-	}
+	b := 0.1
+	b += 0.2
 	
-	fmt.Println("Hello")
+	fmt.Println(math.Abs(b-0.3)<0.0001)
 }
