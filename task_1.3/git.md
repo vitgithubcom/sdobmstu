@@ -128,4 +128,5 @@ git pull origin main
 
 :rocket:
 - go run ./cmd/main.go
+- git remote add github https://github.com/
 - git push github master
