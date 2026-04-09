@@ -59,7 +59,12 @@ func main() {
 		planets_7 = append(planets_7, i)
 	}
 	changeZeroIndex(planets_7)
+	planets_8 := make([]int, len(planets_7))
+	copy(planets_8, planets_7)
 	planets_7 = append(planets_7[:1], planets_7[len(planets_7)-1:]...)
 	fmt.Println(planets_7)
+	planets_8 = append(planets_8[:1], planets_8[len(planets_8)-1])
+	fmt.Println(planets_8)
+
 }
 
