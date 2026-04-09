@@ -1,2 +1,2 @@
 package main
-type 1
+type 12
