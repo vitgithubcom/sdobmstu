@@ -2,6 +2,11 @@ package main
 
 import "fmt"
 
+func changeZeroIndex(arr []int) {
+	arr[0] = 99999
+}
+
+
 func main() {
 	planets := [] string{
 		"Меркурий",
@@ -36,5 +41,24 @@ func main() {
 	city = append(city[:2],city[3:]...)
 	fmt.Println(city)
 	fmt.Println(len(city))
+
+	planets_5 := make([]int, 0, 10)
+	for i := 0; i < 30; i++ {
+		planets_5 = append(planets_5, i)
+		fmt.Printf("len slice: %v, cap slice: %v\n", len(planets_5), cap(planets_5))
+	}
+
+	planets_6 := make([]int, 0)
+	for i := 0; i < 30; i++ {
+		planets_6 = append(planets_6, i)
+		fmt.Printf("len slice: %v, cap slice: %v\n", len(planets_6), cap(planets_6))
+	}
+
+	planets_7 := make([]int, 0, 100)
+	for i := 0; i < 30; i++ {
+		planets_7 = append(planets_7, i)
+	}
+	changeZeroIndex(planets_7)
+	fmt.Println(planets_7)
 }
 
