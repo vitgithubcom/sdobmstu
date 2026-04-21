@@ -1,22 +1,29 @@
 package main
 
 import (
-	"math/rand/v2"
 	"fmt"
+	"math/rand/v2"
+	"sync"
 	"time"
 )
 
-func sleepyGopher(index int){
-	time.Sleep(time.Duration(rand.IntN(10) * int(time.Second)))
+func sleepyGopher(index int, wg *sync.WaitGroup){
+	defer wg.Done()
+	time.Sleep(time.Duration(rand.IntN(5) * int(time.Second)))
 	fmt.Println(index)
+	
 }
 
 func main() {
 	
-	for i := 0; i < 5; i++ {
-		go sleepyGopher(i)
+	var wg sync.WaitGroup
+	//wg.Add(5)
+
+	for i := 0; i < 7; i++ {
+		wg.Add(1)
+		go sleepyGopher(i, &wg)
 	}
 
-	time.Sleep(10*time.Second)
+	wg.Wait()
 
 }	
