@@ -11,4 +11,4 @@ func main() {
 	wordStats := logic.CountWordFrequencies(text)
 	
 	service.PrintStatistics(wordStats, logic.GetTotalWordsCount(wordStats))
-}
+} 
