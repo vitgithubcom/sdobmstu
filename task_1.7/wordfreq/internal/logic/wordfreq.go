@@ -30,7 +30,3 @@ func GetTotalWordsCount(stats map[string]int) int {
 	}
 	return total
 }
-
-func GetUniqueWordsCount(stats map[string]int) int {
-	return len(stats)
-}
