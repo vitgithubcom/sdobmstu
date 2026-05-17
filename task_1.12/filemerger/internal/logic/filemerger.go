@@ -24,13 +24,14 @@ func MergeFiles(files []string, dir, outputName string) {
 	output, _ := os.Create(outputPath)
 	defer output.Close()
 	
-	for _, file := range files {
-		output.WriteString("\n=== " + filepath.Base(file) + " ===\n")
+	for i, file := range files {
+		
+		if i > 0 {
+			output.WriteString("\n")
+		}
 		
 		input, _ := os.Open(file)
 		io.Copy(output, input)
 		input.Close()
-		
-		output.WriteString("\n")
 	}
 }
