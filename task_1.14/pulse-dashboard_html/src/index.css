@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  transition: all 0.2s ease;
+}
+
+body {
+  background: #f1f5f9;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.kpi-card {
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+
+.kpi-card:active {
+  transform: scale(0.98);
+}
+
+.trend-up {
+  color: #10b981;
+}
+
+.trend-down {
+  color: #ef4444;
+}
+
+.badge-warning {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.badge-critical {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.mobile-nav {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+@media (max-width: 640px) {
+  .kpi-card {
+    border-radius: 16px;
+  }
+}
