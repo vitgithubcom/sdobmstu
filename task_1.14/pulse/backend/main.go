@@ -6,14 +6,12 @@ import (
     "net/http"
 )
 
-// ========== МОДЕЛИ ДАННЫХ ==========
-
 type KPI struct {
     ID     int     `json:"id"`
     Title  string  `json:"title"`
     Value  string  `json:"value"`
     Unit   string  `json:"unit"`
-    Plan   float64 `json:"plan"`   // ← исправлено на float64
+    Plan   float64 `json:"plan"`
     Delta  float64 `json:"delta"`
     Trend  string  `json:"trend"`
     Status string  `json:"status"`
@@ -55,8 +53,6 @@ type User struct {
     Role  string `json:"role"`
 }
 
-// ========== МОК-ДАННЫЕ ==========
-
 var mockKPI = []KPI{
     {ID: 1, Title: "Выручка", Value: "14 280", Unit: "тыс. руб", Plan: 15200.0, Delta: -6.1, Trend: "down", Status: "critical"},
     {ID: 2, Title: "OEE (общая эффективность)", Value: "73.5", Unit: "%", Plan: 78.0, Delta: -4.5, Trend: "down", Status: "warning"},
@@ -88,8 +84,6 @@ var mockIntegrations = []Integration{
     {Name: "Mock-CRM", LastSync: "12:30:05", Status: "warning", Lag: "14 мин"},
     {Name: "Mock-Warehouse", LastSync: "12:42:10", Status: "ok", Lag: "2 мин"},
 }
-
-// ========== HTTP ХЕНДЛЕРЫ ==========
 
 func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
@@ -156,8 +150,6 @@ func verifyToken(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusUnauthorized)
     json.NewEncoder(w).Encode(map[string]string{"valid": "false"})
 }
-
-// ========== ЗАПУСК ==========
 
 func main() {
     http.HandleFunc("GET /api/kpi", corsMiddleware(getKPI))
