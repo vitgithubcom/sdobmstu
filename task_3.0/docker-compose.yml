@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   coinmarketcap-api:
     build:
@@ -9,7 +7,7 @@ services:
     environment:
       - CMC_API_KEY=${CMC_API_KEY:-fa1b6da457d3419d8ffccc2b52c789f1}
       - CRYPTO_IDS=${CRYPTO_IDS:-1,1027}
-    # restart: unless-stopped  # Временно отключаем для отладки
+    restart: unless-stopped
     networks:
       - app-network
 
