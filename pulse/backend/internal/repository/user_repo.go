@@ -3,7 +3,6 @@ package repository
 import (
     "database/sql"
     "pulse-backend/internal/domain"
-    "time"
 
     _ "github.com/lib/pq"
 )
