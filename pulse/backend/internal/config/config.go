@@ -13,6 +13,7 @@ type Config struct {
     DBName     string
     JWTSecret  string
     Port       int
+    Env        string
 }
 
 func Load() (*Config, error) {
@@ -27,6 +28,7 @@ func Load() (*Config, error) {
         DBName:     getEnv("DB_NAME", "pulse_db"),
         JWTSecret:  getEnv("JWT_SECRET", "super-secret-key"),
         Port:       port,
+        Env:        getEnv("ENV", "development"),
     }, nil
 }
 

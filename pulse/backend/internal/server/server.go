@@ -4,7 +4,6 @@ import (
     "database/sql"
     "fmt"
     "net/http"
-    "os"
     "pulse-backend/internal/config"
     "pulse-backend/internal/handlers"
     "pulse-backend/internal/middleware"
