@@ -7,7 +7,7 @@ WORKDIR /app
 COPY . .
 
 # Устанавливаем зависимости и собираем
-RUN npm ci && \
+RUN npm install && \
     npm run build
 
 # ===== ОТДАЁМ =====
