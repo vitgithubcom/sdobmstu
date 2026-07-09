@@ -57,7 +57,7 @@ func (s *Server) Run() error {
     }
     s.log.Info("✅ Connected to PostgreSQL on %s:%d", s.config.DBHost, s.config.DBPort)
 
-    // ===== ИНИЦИАЛИЗАЦИЯ РЕПОЗИТОРИЕВ =====
+    // ===== ИНИЦИАЛИЗАЦИЯ РЕПОЗИТОРИЕВ ======
     userRepo := repository.NewUserRepository(db)
     kpiRepo := repository.NewKPIRepository(db)
     alertsRepo := repository.NewAlertsRepository(db)
