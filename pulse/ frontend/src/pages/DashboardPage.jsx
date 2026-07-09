@@ -6,6 +6,7 @@ import KPICard from '../components/Dashboard/KPICard'
 import RevenueChart from '../components/Dashboard/RevenueChart'
 import AlertsList from '../components/Dashboard/AlertsList'
 import IntegrationsTable from '../components/Integrations/IntegrationsTable'
+import LoadingSpinner from '../components/Common/LoadingSpinner'
 import api from '../api/client'
 
 function DashboardPage() {
@@ -54,11 +55,7 @@ function DashboardPage() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    )
+    return <LoadingSpinner fullScreen />
   }
 
   return (

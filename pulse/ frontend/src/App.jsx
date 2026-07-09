@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import ProtectedRoute from './components/Auth/ProtectedRoute'
+import LoadingSpinner from './components/Common/LoadingSpinner'
 
 // Страницы
 import LoginPage from './pages/LoginPage'
@@ -16,7 +17,11 @@ import ReportsPage from './pages/ReportsPage'
 import SettingsPage from './pages/SettingsPage'
 
 function App() {
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated, user, loading } = useAuth()
+
+  if (loading) {
+    return <LoadingSpinner fullScreen />
+  }
 
   return (
     <Routes>
