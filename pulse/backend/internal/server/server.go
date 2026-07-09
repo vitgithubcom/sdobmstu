@@ -90,6 +90,12 @@ func (s *Server) Run() error {
     // Настройка роутов
     mux := http.NewServeMux()
 
+    // ===== ТЕСТОВЫЙ РОУТ =====
+    mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        w.WriteHeader(http.StatusOK)
+        w.Write([]byte("OK"))
+    })
+
     // Публичные
     mux.HandleFunc("POST /api/auth/login", authHandler.Login)
 
