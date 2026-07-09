@@ -3,12 +3,12 @@ FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
 
-# Копируем всё (включая исходники)
+# Копируем всё
 COPY . .
 
-# Скачиваем зависимости и собираем
-RUN go mod download && \
-    go mod verify && \
+# Автоматически создаём go.sum и собираем
+RUN go mod tidy && \
+    go mod download && \
     go build -o pulse-backend ./cmd/api
 
 # ===== ЗАПУСКАЕМ =====
