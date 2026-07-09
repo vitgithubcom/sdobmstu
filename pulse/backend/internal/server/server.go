@@ -20,7 +20,6 @@ type Server struct {
 }
 
 func NewServer(cfg *config.Config) *Server {
-    // Настройка логгера
     log := logger.Default()
     log.SetPrefix("PULSE")
 
@@ -39,7 +38,6 @@ func NewServer(cfg *config.Config) *Server {
 }
 
 func (s *Server) Run() error {
-    // Подключение к БД
     connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
         s.config.DBHost, s.config.DBPort, s.config.DBUser,
         s.config.DBPassword, s.config.DBName)
@@ -91,27 +89,27 @@ func (s *Server) Run() error {
     authMiddleware := middleware.AuthMiddleware(authService)
 
     // KPI
-    mux.HandleFunc("/api/kpi", authMiddleware(http.HandlerFunc(kpiHandler.GetAll)))
-    mux.HandleFunc("/api/kpi/{id}", authMiddleware(http.HandlerFunc(kpiHandler.GetByID)))
-    mux.HandleFunc("/api/chart", authMiddleware(http.HandlerFunc(kpiHandler.GetChartData)))
+    mux.Handle("/api/kpi", authMiddleware(http.HandlerFunc(kpiHandler.GetAll)))
+    mux.Handle("/api/kpi/{id}", authMiddleware(http.HandlerFunc(kpiHandler.GetByID)))
+    mux.Handle("/api/chart", authMiddleware(http.HandlerFunc(kpiHandler.GetChartData)))
 
     // Alerts
-    mux.HandleFunc("/api/alerts", authMiddleware(http.HandlerFunc(alertsHandler.GetAll)))
+    mux.Handle("/api/alerts", authMiddleware(http.HandlerFunc(alertsHandler.GetAll)))
 
     // Integrations
-    mux.HandleFunc("/api/integrations", authMiddleware(http.HandlerFunc(integrationsHandler.GetAll)))
+    mux.Handle("/api/integrations", authMiddleware(http.HandlerFunc(integrationsHandler.GetAll)))
 
     // Users
-    mux.HandleFunc("/api/users", authMiddleware(http.HandlerFunc(userHandler.GetAll)))
-    mux.HandleFunc("/api/users/profile", authMiddleware(http.HandlerFunc(userHandler.GetProfile)))
-    mux.HandleFunc("/api/users/profile", authMiddleware(http.HandlerFunc(userHandler.UpdateProfile)))
-    mux.HandleFunc("/api/users/password", authMiddleware(http.HandlerFunc(userHandler.ChangePassword)))
-    mux.HandleFunc("/api/users", authMiddleware(http.HandlerFunc(userHandler.Create)))
-    mux.HandleFunc("/api/users/{id}", authMiddleware(http.HandlerFunc(userHandler.Update)))
-    mux.HandleFunc("/api/users/{id}/toggle", authMiddleware(http.HandlerFunc(userHandler.ToggleActive)))
+    mux.Handle("/api/users", authMiddleware(http.HandlerFunc(userHandler.GetAll)))
+    mux.Handle("/api/users/profile", authMiddleware(http.HandlerFunc(userHandler.GetProfile)))
+    mux.Handle("/api/users/profile", authMiddleware(http.HandlerFunc(userHandler.UpdateProfile)))
+    mux.Handle("/api/users/password", authMiddleware(http.HandlerFunc(userHandler.ChangePassword)))
+    mux.Handle("/api/users", authMiddleware(http.HandlerFunc(userHandler.Create)))
+    mux.Handle("/api/users/{id}", authMiddleware(http.HandlerFunc(userHandler.Update)))
+    mux.Handle("/api/users/{id}/toggle", authMiddleware(http.HandlerFunc(userHandler.ToggleActive)))
 
     // Audit
-    mux.HandleFunc("/api/audit", authMiddleware(http.HandlerFunc(auditHandler.GetAll)))
+    mux.Handle("/api/audit", authMiddleware(http.HandlerFunc(auditHandler.GetAll)))
 
     // ---- Обёртка с CORS и логгером ----
     handler := middleware.CORS(mux)
