@@ -18,6 +18,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   backend:
     build:
@@ -32,6 +33,7 @@ services:
       DB_NAME: ${DB_NAME:-pulse_db}
       JWT_SECRET: ${JWT_SECRET:-super-secret-key}
       PORT: 8082
+      GIN_MODE: release
     ports:
       - "8082:8082"
     depends_on:
@@ -39,6 +41,7 @@ services:
         condition: service_healthy
     networks:
       - pulse-network
+    restart: unless-stopped
 
   frontend:
     build:
@@ -51,6 +54,7 @@ services:
       - backend
     networks:
       - pulse-network
+    restart: unless-stopped
 
   nginx:
     image: nginx:alpine
@@ -67,6 +71,7 @@ services:
       - backend
     networks:
       - pulse-network
+    restart: unless-stopped
 
 networks:
   pulse-network:

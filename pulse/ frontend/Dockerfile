@@ -1,13 +1,16 @@
+# ===== СТРОИМ =====
 FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
-
+# Копируем всё (включая исходники)
 COPY . .
-RUN npm run build
 
+# Устанавливаем зависимости и собираем
+RUN npm ci && \
+    npm run build
+
+# ===== ОТДАЁМ =====
 FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html

@@ -3,23 +3,46 @@ package server
 import (
     "database/sql"
     "fmt"
-    "log"
     "net/http"
+    "os"
     "pulse-backend/internal/config"
     "pulse-backend/internal/handlers"
     "pulse-backend/internal/middleware"
     "pulse-backend/internal/repository"
     "pulse-backend/internal/service"
+    "pulse-backend/pkg/logger"
 
     _ "github.com/lib/pq"
 )
 
 type Server struct {
     config *config.Config
+    log    *logger.Logger
 }
 
 func NewServer(cfg *config.Config) *Server {
-    return &Server{config: cfg}
+    // Настройка логгера
+    log := logger.Default()
+    log.SetPrefix("PULSE")
+    
+    // Включаем цвета только в development
+    if cfg.Env == "development" {
+        log.SetUseColor(true)
+    } else {
+        log.SetUseColor(false)
+    }
+
+    // Уровень логирования
+    if cfg.Env == "development" {
+        log.SetLevel(logger.DEBUG)
+    } else {
+        log.SetLevel(logger.INFO)
+    }
+
+    return &Server{
+        config: cfg,
+        log:    log,
+    }
 }
 
 func (s *Server) Run() error {
@@ -28,16 +51,20 @@ func (s *Server) Run() error {
         s.config.DBHost, s.config.DBPort, s.config.DBUser,
         s.config.DBPassword, s.config.DBName)
 
+    s.log.Debug("Connecting to PostgreSQL: %s", connStr)
+
     db, err := sql.Open("postgres", connStr)
     if err != nil {
+        s.log.Fatal("Failed to open database: %v", err)
         return err
     }
     defer db.Close()
 
     if err := db.Ping(); err != nil {
+        s.log.Fatal("Failed to ping database: %v", err)
         return err
     }
-    log.Println("✅ Connected to PostgreSQL")
+    s.log.Info("✅ Connected to PostgreSQL on %s:%d", s.config.DBHost, s.config.DBPort)
 
     // Инициализация репозиториев
     userRepo := repository.NewUserRepository(db)
@@ -98,16 +125,18 @@ func (s *Server) Run() error {
     handler = middleware.Logger(handler)
 
     addr := fmt.Sprintf(":%d", s.config.Port)
-    log.Printf("🚀 Server starting on %s", addr)
-    log.Printf("📊 API endpoints:")
-    log.Printf("   POST /api/auth/login")
-    log.Printf("   GET  /api/kpi")
-    log.Printf("   GET  /api/kpi/{id}")
-    log.Printf("   GET  /api/chart")
-    log.Printf("   GET  /api/alerts")
-    log.Printf("   GET  /api/integrations")
-    log.Printf("   GET  /api/users")
-    log.Printf("   GET  /api/audit")
+    
+    s.log.Info("🚀 Server starting on http://localhost%s", addr)
+    s.log.Info("📊 API endpoints:")
+    s.log.Info("   POST /api/auth/login")
+    s.log.Info("   GET  /api/kpi")
+    s.log.Info("   GET  /api/kpi/{id}")
+    s.log.Info("   GET  /api/chart")
+    s.log.Info("   GET  /api/alerts")
+    s.log.Info("   GET  /api/integrations")
+    s.log.Info("   GET  /api/users")
+    s.log.Info("   GET  /api/audit")
+    s.log.Info("🌍 Environment: %s", s.config.Env)
 
     return http.ListenAndServe(addr, handler)
 }
