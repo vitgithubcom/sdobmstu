@@ -77,7 +77,7 @@ function LoginPage() {
         </form>
         
         <div className="mt-6 text-center text-xs text-gray-400 border-t pt-4">
-          Демо-доступ: admin / admin123
+          Демо-доступ: напишите yvitemail@gmail.com
         </div>
       </div>
     </div>
