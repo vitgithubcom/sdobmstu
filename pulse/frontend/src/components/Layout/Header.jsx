@@ -11,6 +11,14 @@ function Header({ currentTime, user, onLogout, title = 'Пульс' }) {
         <Link to="/dashboard" className="bg-white px-3 py-1.5 rounded-full text-sm shadow-sm border text-gray-600 hover:bg-gray-50 transition">
           📊 Дашборд
         </Link>
+        
+        {/* ===== КНОПКА ОТЧЁТЫ (для analyst, manager, admin) ===== */}
+        {user?.role !== 'viewer' && (
+          <Link to="/reports" className="bg-white px-3 py-1.5 rounded-full text-sm shadow-sm border text-gray-600 hover:bg-gray-50 transition">
+            📄 Отчёты
+          </Link>
+        )}
+        
         <Link to="/profile" className="bg-white px-3 py-1.5 rounded-full text-sm shadow-sm border text-gray-600 hover:bg-gray-50 transition">
           👤 Профиль
         </Link>

@@ -11,14 +11,7 @@ function MobileNav({ activeTab, setActiveTab }) {
         <span className="text-xl">📊</span>
         <span className="text-[11px]">Дашборд</span>
       </Link>
-      <Link 
-        to="/profile"
-        onClick={() => setActiveTab('profile')}
-        className={`flex flex-col items-center p-2 rounded-xl ${activeTab === 'profile' ? 'text-blue-600 bg-blue-50' : 'text-gray-500'}`}
-      >
-        <span className="text-xl">👤</span>
-        <span className="text-[11px]">Профиль</span>
-      </Link>
+      
       <Link 
         to="/reports"
         onClick={() => setActiveTab('reports')}
@@ -26,6 +19,15 @@ function MobileNav({ activeTab, setActiveTab }) {
       >
         <span className="text-xl">📄</span>
         <span className="text-[11px]">Отчёты</span>
+      </Link>
+      
+      <Link 
+        to="/profile"
+        onClick={() => setActiveTab('profile')}
+        className={`flex flex-col items-center p-2 rounded-xl ${activeTab === 'profile' ? 'text-blue-600 bg-blue-50' : 'text-gray-500'}`}
+      >
+        <span className="text-xl">👤</span>
+        <span className="text-[11px]">Профиль</span>
       </Link>
     </div>
   )
