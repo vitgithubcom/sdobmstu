@@ -44,7 +44,7 @@ function DashboardPage() {
         api.get('/integrations'),
       ])
 
-      // Преобразуем KPI (берём только из БД)
+      // Преобразуем KPI
       const transformedKPI = Array.isArray(kpiRes.data) 
         ? kpiRes.data.map(item => ({
             id: item.id,
@@ -58,14 +58,14 @@ function DashboardPage() {
           }))
         : []
 
-      // Преобразуем Chart Data (берём ТОЛЬКО из БД, без моков!)
+      // Преобразуем Chart Data (берём ТОЛЬКО из БД)
       const transformedChart = chartRes.data && Array.isArray(chartRes.data) && chartRes.data.length > 0
         ? chartRes.data.map(item => ({
             name: item.name || '—',
-            факт: item.fact || 0,
-            план: item.plan || 0,
+            факт: typeof item.fact === 'number' ? item.fact : parseFloat(item.fact) || 0,
+            план: typeof item.plan === 'number' ? item.plan : parseFloat(item.plan) || 0,
           }))
-        : []  // ← пустой массив, если данных нет
+        : []
 
       // Преобразуем Alerts
       const transformedAlerts = Array.isArray(alertsRes.data) ? alertsRes.data : []
@@ -74,6 +74,7 @@ function DashboardPage() {
       const transformedIntegrations = Array.isArray(integrationsRes.data) ? integrationsRes.data : []
 
       console.log('KPI data:', transformedKPI)
+      console.log('Raw chart data from API:', chartRes.data)
       console.log('Chart data (from DB):', transformedChart)
 
       setKpiData(transformedKPI)
