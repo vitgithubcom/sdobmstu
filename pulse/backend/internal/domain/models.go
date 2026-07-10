@@ -49,9 +49,9 @@ type History struct {
 }
 
 type ChartData struct {
-    Name string `json:"name"`
-    Fact int    `json:"факт"`
-    Plan int    `json:"план"`
+    Name string  `json:"name"`
+    Fact float64 `json:"факт"`   // ← исправлено
+    Plan float64 `json:"план"`   // ← исправлено
 }
 
 // ========== ALERTS ==========
@@ -67,12 +67,12 @@ type Alert struct {
 
 // ========== INTEGRATIONS ==========
 type Integration struct {
-    ID           int       `json:"id"`
-    Name         string    `json:"name"`
-    Status       string    `json:"status"`
-    LastSync     time.Time `json:"last_sync"`
-    LagSeconds   int       `json:"lag_seconds"`
-    ErrorMessage *string   `json:"error_message,omitempty"` // ← указатель для NULL
+    ID           int        `json:"id"`
+    Name         string     `json:"name"`
+    Status       string     `json:"status"`
+    LastSync     time.Time  `json:"last_sync"`
+    LagSeconds   int        `json:"lag_seconds"`
+    ErrorMessage *string    `json:"error_message,omitempty"`
 }
 
 // ========== AUDIT ==========
