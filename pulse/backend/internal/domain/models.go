@@ -13,7 +13,7 @@ type User struct {
     IsActive     bool       `json:"is_active"`
     CreatedAt    time.Time  `json:"created_at"`
     UpdatedAt    time.Time  `json:"updated_at"`
-    LastLogin    *time.Time `json:"last_login,omitempty"` // ← указатель, чтобы принимать NULL
+    LastLogin    *time.Time `json:"last_login,omitempty"`
 }
 
 type LoginRequest struct {
@@ -56,13 +56,13 @@ type ChartData struct {
 
 // ========== ALERTS ==========
 type Alert struct {
-    ID         int       `json:"id"`
-    System     string    `json:"system"`
-    Message    string    `json:"message"`
-    Severity   string    `json:"severity"`
-    IsActive   bool      `json:"is_active"`
-    CreatedAt  time.Time `json:"created_at"`
-    ResolvedAt *time.Time `json:"resolved_at,omitempty"` // ← тоже указатель для NULL
+    ID         int        `json:"id"`
+    System     string     `json:"system"`
+    Message    string     `json:"message"`
+    Severity   string     `json:"severity"`
+    IsActive   bool       `json:"is_active"`
+    CreatedAt  time.Time  `json:"created_at"`
+    ResolvedAt *time.Time `json:"resolved_at,omitempty"`
 }
 
 // ========== INTEGRATIONS ==========
@@ -72,7 +72,7 @@ type Integration struct {
     Status       string    `json:"status"`
     LastSync     time.Time `json:"last_sync"`
     LagSeconds   int       `json:"lag_seconds"`
-    ErrorMessage string    `json:"error_message"`
+    ErrorMessage *string   `json:"error_message,omitempty"` // ← указатель для NULL
 }
 
 // ========== AUDIT ==========

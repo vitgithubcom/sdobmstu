@@ -26,10 +26,14 @@ func (r *IntegrationsRepository) GetAll() ([]domain.Integration, error) {
     var integrations []domain.Integration
     for rows.Next() {
         var i domain.Integration
+        var errorMsg sql.NullString
         err := rows.Scan(&i.ID, &i.Name, &i.Status, &i.LastSync,
-            &i.LagSeconds, &i.ErrorMessage)
+            &i.LagSeconds, &errorMsg)
         if err != nil {
             return nil, err
+        }
+        if errorMsg.Valid {
+            i.ErrorMessage = &errorMsg.String
         }
         integrations = append(integrations, i)
     }
