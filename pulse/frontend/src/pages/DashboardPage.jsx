@@ -43,8 +43,28 @@ function DashboardPage() {
         api.get('/alerts'),
         api.get('/integrations'),
       ])
-      setKpiData(kpiRes.data)
-      setChartData(chartRes.data)
+
+      // Преобразуем KPI
+      const transformedKPI = kpiRes.data.map(item => ({
+        id: item.id,
+        title: item.name,
+        value: item.value.toLocaleString(),
+        unit: item.unit,
+        plan: item.plan,
+        delta: parseFloat(item.delta.toFixed(1)),
+        trend: item.direction === 'up' ? (item.delta >= 0 ? 'up' : 'down') : (item.delta <= 0 ? 'up' : 'down'),
+        status: item.status,
+      }))
+
+      // Преобразуем Chart Data
+      const transformedChart = chartRes.data.map(item => ({
+        name: item.name,
+        факт: item.fact,
+        план: item.plan,
+      }))
+
+      setKpiData(transformedKPI)
+      setChartData(transformedChart)
       setAlerts(alertsRes.data)
       setIntegrations(integrationsRes.data)
     } catch (error) {
