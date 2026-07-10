@@ -34,7 +34,7 @@ function AlertsList({ alerts }) {
         )}
       </div>
       <Link 
-        to="/admin/audit" 
+        to="/alerts" 
         className="text-xs text-blue-600 mt-3 w-full text-center py-1 hover:bg-blue-50 rounded-full block"
       >
         Все события →

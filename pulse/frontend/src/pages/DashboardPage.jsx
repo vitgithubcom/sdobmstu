@@ -56,12 +56,14 @@ function DashboardPage() {
         status: item.status,
       }))
 
-      // Преобразуем Chart Data
+      // Преобразуем Chart Data — проверяем разные варианты ключей
       const transformedChart = chartRes.data.map(item => ({
-        name: item.name,
-        факт: item.fact,
-        план: item.plan,
+        name: item.name || item.period || '—',
+        факт: item.fact || item.fact_value || item.value || 0,
+        план: item.plan || item.plan_value || 0,
       }))
+
+      console.log('Chart data:', transformedChart) // ← для отладки в консоли браузера
 
       setKpiData(transformedKPI)
       setChartData(transformedChart)
@@ -110,5 +112,5 @@ function DashboardPage() {
     </div>
   )
 }
- 
+
 export default DashboardPage

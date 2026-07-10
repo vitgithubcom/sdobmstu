@@ -7,6 +7,7 @@ import LoadingSpinner from './components/Common/LoadingSpinner'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import ProfilePage from './pages/ProfilePage'
+import AlertsPage from './pages/AlertsPage'
 import AdminPage from './pages/AdminPage'
 import AdminUsersPage from './pages/AdminUsersPage'
 import AdminRolesPage from './pages/AdminRolesPage'
@@ -42,6 +43,12 @@ function App() {
       <Route path="/profile" element={
         <ProtectedRoute>
           <ProfilePage />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/alerts" element={
+        <ProtectedRoute>
+          <AlertsPage />
         </ProtectedRoute>
       } />
 
