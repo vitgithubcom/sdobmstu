@@ -75,10 +75,10 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 
 -- Пользователи (пароль: admin123 → хеш bcrypt)
 INSERT INTO users (username, email, full_name, role, password_hash) VALUES
-('admin', 'admin@vitwebsite.ru', 'Администратор', 'admin', '$2a$10$N9qo8uLOickgx2ZMRZoMy.Mr/.3Z5QZwUz5k6Fv.3Xp2CkUf8kXUG'),
-('analyst', 'analyst@vitwebsite.ru', 'Аналитик', 'analyst', '$2a$10$N9qo8uLOickgx2ZMRZoMy.Mr/.3Z5QZwUz5k6Fv.3Xp2CkUf8kXUG'),
-('viewer', 'viewer@vitwebsite.ru', 'Наблюдатель', 'viewer', '$2a$10$N9qo8uLOickgx2ZMRZoMy.Mr/.3Z5QZwUz5k6Fv.3Xp2CkUf8kXUG'),
-('manager', 'manager@vitwebsite.ru', 'Менеджер', 'manager', '$2a$10$N9qo8uLOickgx2ZMRZoMy.Mr/.3Z5QZwUz5k6Fv.3Xp2CkUf8kXUG');
+('admin', 'admin@vitwebsite.ru', 'Администратор', 'admin', '$2b$12$OlRu4/kPaNEhyJGQJci2X.zQTbWvxoCXaQp0I7j0bFuIy.XW/Irfu'),
+('analyst', 'analyst@vitwebsite.ru', 'Аналитик', 'analyst', '$2b$12$OlRu4/kPaNEhyJGQJci2X.zQTbWvxoCXaQp0I7j0bFuIy.XW/Irfu'),
+('viewer', 'viewer@vitwebsite.ru', 'Наблюдатель', 'viewer', '$2b$12$OlRu4/kPaNEhyJGQJci2X.zQTbWvxoCXaQp0I7j0bFuIy.XW/Irfu'),
+('manager', 'manager@vitwebsite.ru', 'Менеджер', 'manager', '$2b$12$OlRu4/kPaNEhyJGQJci2X.zQTbWvxoCXaQp0I7j0bFuIy.XW/Irfu');
 
 -- KPI определения
 INSERT INTO kpi_definitions (code, name, unit, direction, source_system) VALUES
