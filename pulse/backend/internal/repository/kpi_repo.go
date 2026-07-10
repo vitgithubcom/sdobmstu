@@ -109,20 +109,14 @@ func (r *KPIRepository) GetByID(id int) (*domain.KPI, error) {
 
 func (r *KPIRepository) GetChartData() ([]domain.ChartData, error) {
     rows, err := r.db.Query(`
-        SELECT 'Пн' as name, COALESCE(SUM(fact_value), 0) as fact, COALESCE(SUM(plan_value), 0) as plan
+        SELECT 
+            TO_CHAR(period_start, 'Dy') as name,
+            COALESCE(SUM(fact_value), 0) as fact,
+            COALESCE(SUM(plan_value), 0) as plan
         FROM kpi_values
-        UNION ALL SELECT 'Вт', COALESCE(SUM(fact_value), 0), COALESCE(SUM(plan_value), 0)
-        FROM kpi_values
-        UNION ALL SELECT 'Ср', COALESCE(SUM(fact_value), 0), COALESCE(SUM(plan_value), 0)
-        FROM kpi_values
-        UNION ALL SELECT 'Чт', COALESCE(SUM(fact_value), 0), COALESCE(SUM(plan_value), 0)
-        FROM kpi_values
-        UNION ALL SELECT 'Пт', COALESCE(SUM(fact_value), 0), COALESCE(SUM(plan_value), 0)
-        FROM kpi_values
-        UNION ALL SELECT 'Сб', COALESCE(SUM(fact_value), 0), COALESCE(SUM(plan_value), 0)
-        FROM kpi_values
-        UNION ALL SELECT 'Вс', COALESCE(SUM(fact_value), 0), COALESCE(SUM(plan_value), 0)
-        FROM kpi_values
+        WHERE period_start >= NOW() - INTERVAL '7 days'
+        GROUP BY TO_CHAR(period_start, 'Dy')
+        ORDER BY MIN(period_start)
     `)
     if err != nil {
         return nil, err
@@ -132,7 +126,10 @@ func (r *KPIRepository) GetChartData() ([]domain.ChartData, error) {
     var data []domain.ChartData
     for rows.Next() {
         var d domain.ChartData
-        rows.Scan(&d.Name, &d.Fact, &d.Plan)
+        err := rows.Scan(&d.Name, &d.Fact, &d.Plan)
+        if err != nil {
+            return nil, err
+        }
         data = append(data, d)
     }
     return data, nil
