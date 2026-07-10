@@ -58,28 +58,24 @@ function DashboardPage() {
           }))
         : []
 
-      // Преобразуем Chart Data - с отладкой
-      console.log('RAW chartRes.data:', chartRes.data)
-
+      // Преобразуем Chart Data - с правильными ключами (русскими!)
       const transformedChart = chartRes.data && Array.isArray(chartRes.data) && chartRes.data.length > 0
-        ? chartRes.data.map(item => {
-            const result = {
-              name: item.name || '—',
-              факт: parseFloat(item.fact) || 0,
-              план: parseFloat(item.plan) || 0,
-            }
-            console.log('Transform item:', item, '->', result)
-            return result
-          })
+        ? chartRes.data.map(item => ({
+            name: item.name || '—',
+            факт: parseFloat(item.факт) || 0,   // ← ключ "факт" (русский)
+            план: parseFloat(item.план) || 0,   // ← ключ "план" (русский)
+          }))
         : []
-
-      console.log('Final transformedChart:', transformedChart)
 
       // Преобразуем Alerts
       const transformedAlerts = Array.isArray(alertsRes.data) ? alertsRes.data : []
 
       // Преобразуем Integrations
       const transformedIntegrations = Array.isArray(integrationsRes.data) ? integrationsRes.data : []
+
+      console.log('KPI data:', transformedKPI)
+      console.log('Raw chart data from API:', chartRes.data)
+      console.log('Chart data (from DB):', transformedChart)
 
       setKpiData(transformedKPI)
       setChartData(transformedChart)
