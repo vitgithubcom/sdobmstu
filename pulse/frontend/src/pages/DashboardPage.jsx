@@ -45,30 +45,40 @@ function DashboardPage() {
       ])
 
       // Преобразуем KPI
-      const transformedKPI = kpiRes.data.map(item => ({
-        id: item.id,
-        title: item.name,
-        value: item.value.toLocaleString(),
-        unit: item.unit,
-        plan: item.plan,
-        delta: parseFloat(item.delta.toFixed(1)),
-        trend: item.direction === 'up' ? (item.delta >= 0 ? 'up' : 'down') : (item.delta <= 0 ? 'up' : 'down'),
-        status: item.status,
-      }))
+      const transformedKPI = Array.isArray(kpiRes.data) 
+        ? kpiRes.data.map(item => ({
+            id: item.id,
+            title: item.name,
+            value: item.value.toLocaleString(),
+            unit: item.unit,
+            plan: item.plan,
+            delta: parseFloat(item.delta.toFixed(1)),
+            trend: item.direction === 'up' ? (item.delta >= 0 ? 'up' : 'down') : (item.delta <= 0 ? 'up' : 'down'),
+            status: item.status,
+          }))
+        : []
 
-      // Преобразуем Chart Data — проверяем разные варианты ключей
-      const transformedChart = chartRes.data.map(item => ({
-        name: item.name || item.period || '—',
-        факт: item.fact || item.fact_value || item.value || 0,
-        план: item.plan || item.plan_value || 0,
-      }))
+      // Преобразуем Chart Data — с проверкой на null
+      const transformedChart = chartRes.data && Array.isArray(chartRes.data) 
+        ? chartRes.data.map(item => ({
+            name: item.name || '—',
+            факт: item.fact || 0,
+            план: item.plan || 0,
+          }))
+        : []
 
-      console.log('Chart data:', transformedChart) // ← для отладки в консоли браузера
+      // Преобразуем Alerts
+      const transformedAlerts = Array.isArray(alertsRes.data) ? alertsRes.data : []
+
+      // Преобразуем Integrations
+      const transformedIntegrations = Array.isArray(integrationsRes.data) ? integrationsRes.data : []
+
+      console.log('Chart data:', transformedChart)
 
       setKpiData(transformedKPI)
       setChartData(transformedChart)
-      setAlerts(alertsRes.data)
-      setIntegrations(integrationsRes.data)
+      setAlerts(transformedAlerts)
+      setIntegrations(transformedIntegrations)
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
