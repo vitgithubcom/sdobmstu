@@ -16,11 +16,12 @@ func NewKPIRepository(db *sql.DB) *KPIRepository {
 func (r *KPIRepository) GetAll() ([]domain.KPI, error) {
     rows, err := r.db.Query(`
         SELECT k.id, k.code, k.name, k.unit, k.direction, k.source_system,
-               COALESCE(v.fact_value, 0) as fact_value,
-               COALESCE(v.plan_value, 0) as plan_value
+               COALESCE(SUM(v.fact_value), 0) as fact_value,
+               COALESCE(SUM(v.plan_value), 0) as plan_value
         FROM kpi_definitions k
         LEFT JOIN kpi_values v ON k.id = v.kpi_id 
         WHERE k.is_active = true
+        GROUP BY k.id, k.code, k.name, k.unit, k.direction, k.source_system
     `)
     if err != nil {
         return nil, err
@@ -60,11 +61,12 @@ func (r *KPIRepository) GetByID(id int) (*domain.KPI, error) {
     var k domain.KPI
     err := r.db.QueryRow(`
         SELECT k.id, k.code, k.name, k.unit, k.direction, k.source_system,
-               COALESCE(v.fact_value, 0) as fact_value,
-               COALESCE(v.plan_value, 0) as plan_value
+               COALESCE(SUM(v.fact_value), 0) as fact_value,
+               COALESCE(SUM(v.plan_value), 0) as plan_value
         FROM kpi_definitions k
         LEFT JOIN kpi_values v ON k.id = v.kpi_id 
         WHERE k.id = $1
+        GROUP BY k.id, k.code, k.name, k.unit, k.direction, k.source_system
     `, id).Scan(&k.ID, &k.Code, &k.Name, &k.Unit, &k.Direction,
         &k.Source, &k.Value, &k.Plan)
     if err == sql.ErrNoRows {
@@ -114,7 +116,7 @@ func (r *KPIRepository) GetChartData() ([]domain.ChartData, error) {
             COALESCE(SUM(fact_value), 0) as fact,
             COALESCE(SUM(plan_value), 0) as plan
         FROM kpi_values
-        WHERE period_start >= NOW() - INTERVAL '7 days'
+        WHERE period_start >= NOW() - INTERVAL '6 days'
         GROUP BY TO_CHAR(period_start, 'Dy')
         ORDER BY MIN(period_start)
     `)
