@@ -23,7 +23,6 @@ func NewUserHandler(userService *service.UserService, auditRepo interface {
     return &UserHandler{userService: userService, auditRepo: auditRepo}
 }
 
-// ===== GET /api/users =====
 func (h *UserHandler) GetAll(w http.ResponseWriter, r *http.Request) {
     users, err := h.userService.GetAll()
     if err != nil {
@@ -34,14 +33,12 @@ func (h *UserHandler) GetAll(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(users)
 }
 
-// ===== GET /api/users/profile =====
 func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
     user := middleware.GetUserFromContext(r).(*domain.User)
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(user)
 }
 
-// ===== PUT /api/users/profile =====
 func (h *UserHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
     currentUser := middleware.GetUserFromContext(r).(*domain.User)
 
@@ -69,7 +66,6 @@ func (h *UserHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(currentUser)
 }
 
-// ===== PUT /api/users/password =====
 func (h *UserHandler) ChangePassword(w http.ResponseWriter, r *http.Request) {
     currentUser := middleware.GetUserFromContext(r).(*domain.User)
 
@@ -94,7 +90,6 @@ func (h *UserHandler) ChangePassword(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(map[string]string{"message": "Пароль успешно изменён"})
 }
 
-// ===== POST /api/users =====
 func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
     var req struct {
         Username string `json:"username"`
@@ -129,7 +124,6 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(user)
 }
 
-// ===== PUT /api/users/{id} =====
 func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
     idStr := strings.TrimPrefix(r.URL.Path, "/api/users/")
     id, err := strconv.Atoi(idStr)
@@ -171,7 +165,6 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(user)
 }
 
-// ===== PATCH /api/users/{id}/toggle =====
 func (h *UserHandler) ToggleActive(w http.ResponseWriter, r *http.Request) {
     idStr := strings.TrimPrefix(r.URL.Path, "/api/users/")
     idStr = strings.TrimSuffix(idStr, "/toggle")
