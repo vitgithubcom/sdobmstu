@@ -42,6 +42,7 @@ func (s *UserService) Create(user *domain.User, password string) error {
     }
     user.PasswordHash = string(hash)
 
+    // Создаём пользователя (id и created_at заполнятся в репозитории)
     return s.repo.Create(user)
 }
 

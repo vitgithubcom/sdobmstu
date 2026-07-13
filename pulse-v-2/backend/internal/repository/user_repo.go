@@ -3,8 +3,7 @@ package repository
 import (
     "database/sql"
     "pulse-backend/internal/domain"
-
-    _ "github.com/lib/pq"
+    "time"
 )
 
 type UserRepository struct {
@@ -17,57 +16,69 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 
 func (r *UserRepository) FindByUsername(username string) (*domain.User, error) {
     var user domain.User
+    var lastLogin sql.NullTime
     err := r.db.QueryRow(`
         SELECT id, username, email, password_hash, full_name, role, is_active, created_at, updated_at, last_login
         FROM users WHERE username = $1
     `, username).Scan(
         &user.ID, &user.Username, &user.Email, &user.PasswordHash,
         &user.FullName, &user.Role, &user.IsActive,
-        &user.CreatedAt, &user.UpdatedAt, &user.LastLogin,
+        &user.CreatedAt, &user.UpdatedAt, &lastLogin,
     )
     if err == sql.ErrNoRows {
         return nil, nil
     }
     if err != nil {
         return nil, err
+    }
+    if lastLogin.Valid {
+        user.LastLogin = &lastLogin.Time
     }
     return &user, nil
 }
 
 func (r *UserRepository) FindByEmail(email string) (*domain.User, error) {
     var user domain.User
+    var lastLogin sql.NullTime
     err := r.db.QueryRow(`
         SELECT id, username, email, password_hash, full_name, role, is_active, created_at, updated_at, last_login
         FROM users WHERE email = $1
     `, email).Scan(
         &user.ID, &user.Username, &user.Email, &user.PasswordHash,
         &user.FullName, &user.Role, &user.IsActive,
-        &user.CreatedAt, &user.UpdatedAt, &user.LastLogin,
+        &user.CreatedAt, &user.UpdatedAt, &lastLogin,
     )
     if err == sql.ErrNoRows {
         return nil, nil
     }
     if err != nil {
         return nil, err
+    }
+    if lastLogin.Valid {
+        user.LastLogin = &lastLogin.Time
     }
     return &user, nil
 }
 
 func (r *UserRepository) FindByID(id int) (*domain.User, error) {
     var user domain.User
+    var lastLogin sql.NullTime
     err := r.db.QueryRow(`
         SELECT id, username, email, password_hash, full_name, role, is_active, created_at, updated_at, last_login
         FROM users WHERE id = $1
     `, id).Scan(
         &user.ID, &user.Username, &user.Email, &user.PasswordHash,
         &user.FullName, &user.Role, &user.IsActive,
-        &user.CreatedAt, &user.UpdatedAt, &user.LastLogin,
+        &user.CreatedAt, &user.UpdatedAt, &lastLogin,
     )
     if err == sql.ErrNoRows {
         return nil, nil
     }
     if err != nil {
         return nil, err
+    }
+    if lastLogin.Valid {
+        user.LastLogin = &lastLogin.Time
     }
     return &user, nil
 }
@@ -85,21 +96,28 @@ func (r *UserRepository) GetAll() ([]domain.User, error) {
     var users []domain.User
     for rows.Next() {
         var u domain.User
+        var lastLogin sql.NullTime
         err := rows.Scan(&u.ID, &u.Username, &u.Email, &u.FullName,
-            &u.Role, &u.IsActive, &u.CreatedAt, &u.LastLogin)
+            &u.Role, &u.IsActive, &u.CreatedAt, &lastLogin)
         if err != nil {
             return nil, err
+        }
+        if lastLogin.Valid {
+            u.LastLogin = &lastLogin.Time
         }
         users = append(users, u)
     }
     return users, nil
 }
 
+// ===== CREATE — с возвратом id и created_at =====
 func (r *UserRepository) Create(user *domain.User) error {
-    _, err := r.db.Exec(`
+    err := r.db.QueryRow(`
         INSERT INTO users (username, email, password_hash, full_name, role)
         VALUES ($1, $2, $3, $4, $5)
-    `, user.Username, user.Email, user.PasswordHash, user.FullName, user.Role)
+        RETURNING id, created_at
+    `, user.Username, user.Email, user.PasswordHash, user.FullName, user.Role).
+        Scan(&user.ID, &user.CreatedAt)
     return err
 }
 
