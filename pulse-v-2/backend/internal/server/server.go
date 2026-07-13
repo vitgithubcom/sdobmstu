@@ -83,32 +83,33 @@ func (s *Server) Run() error {
     mux := http.NewServeMux()
 
     // ---- Публичные (без авторизации) ----
-    mux.HandleFunc("/api/auth/login", authHandler.Login)
+    mux.HandleFunc("POST /api/auth/login", authHandler.Login)
 
     // ---- Защищённые (с авторизацией) ----
     authMiddleware := middleware.AuthMiddleware(authService)
 
     // KPI
-    mux.Handle("/api/kpi", authMiddleware(http.HandlerFunc(kpiHandler.GetAll)))
-    mux.Handle("/api/kpi/", authMiddleware(http.HandlerFunc(kpiHandler.GetByID))) // с / в конце для {id}
-    mux.Handle("/api/chart", authMiddleware(http.HandlerFunc(kpiHandler.GetChartData)))
+    mux.HandleFunc("GET /api/kpi", authMiddleware(http.HandlerFunc(kpiHandler.GetAll)))
+    mux.HandleFunc("GET /api/kpi/{id}", authMiddleware(http.HandlerFunc(kpiHandler.GetByID)))
+    mux.HandleFunc("GET /api/chart", authMiddleware(http.HandlerFunc(kpiHandler.GetChartData)))
 
     // Alerts
-    mux.Handle("/api/alerts", authMiddleware(http.HandlerFunc(alertsHandler.GetAll)))
+    mux.HandleFunc("GET /api/alerts", authMiddleware(http.HandlerFunc(alertsHandler.GetAll)))
 
     // Integrations
-    mux.Handle("/api/integrations", authMiddleware(http.HandlerFunc(integrationsHandler.GetAll)))
+    mux.HandleFunc("GET /api/integrations", authMiddleware(http.HandlerFunc(integrationsHandler.GetAll)))
 
     // ---- Users ----
-    mux.Handle("/api/users", authMiddleware(http.HandlerFunc(userHandler.GetAll)))
-    mux.Handle("/api/users/profile", authMiddleware(http.HandlerFunc(userHandler.GetProfile)))
-    mux.Handle("/api/users/password", authMiddleware(http.HandlerFunc(userHandler.ChangePassword)))
-    mux.Handle("POST /api/users", authMiddleware(http.HandlerFunc(userHandler.Create)))                    // ← ДОБАВЛЕНО
-    mux.Handle("PUT /api/users/", authMiddleware(http.HandlerFunc(userHandler.Update)))                     // ← ДОБАВЛЕНО
-    mux.Handle("PATCH /api/users/toggle/", authMiddleware(http.HandlerFunc(userHandler.ToggleActive)))      // ← ДОБАВЛЕНО
+    mux.HandleFunc("GET /api/users", authMiddleware(http.HandlerFunc(userHandler.GetAll)))
+    mux.HandleFunc("GET /api/users/profile", authMiddleware(http.HandlerFunc(userHandler.GetProfile)))
+    mux.HandleFunc("PUT /api/users/profile", authMiddleware(http.HandlerFunc(userHandler.UpdateProfile)))
+    mux.HandleFunc("PUT /api/users/password", authMiddleware(http.HandlerFunc(userHandler.ChangePassword)))
+    mux.HandleFunc("POST /api/users", authMiddleware(http.HandlerFunc(userHandler.Create)))
+    mux.HandleFunc("PUT /api/users/{id}", authMiddleware(http.HandlerFunc(userHandler.Update)))
+    mux.HandleFunc("PATCH /api/users/{id}/toggle", authMiddleware(http.HandlerFunc(userHandler.ToggleActive)))
 
     // Audit
-    mux.Handle("/api/audit", authMiddleware(http.HandlerFunc(auditHandler.GetAll)))
+    mux.HandleFunc("GET /api/audit", authMiddleware(http.HandlerFunc(auditHandler.GetAll)))
 
     // ---- Обёртка с CORS и логгером ----
     handler := middleware.CORS(mux)
@@ -120,15 +121,17 @@ func (s *Server) Run() error {
     s.log.Info("📊 API endpoints:")
     s.log.Info("   POST /api/auth/login")
     s.log.Info("   GET  /api/kpi")
+    s.log.Info("   GET  /api/kpi/{id}")
     s.log.Info("   GET  /api/chart")
     s.log.Info("   GET  /api/alerts")
     s.log.Info("   GET  /api/integrations")
     s.log.Info("   GET  /api/users")
     s.log.Info("   GET  /api/users/profile")
+    s.log.Info("   PUT  /api/users/profile")
     s.log.Info("   PUT  /api/users/password")
-    s.log.Info("   POST /api/users")           // ← БУДЕТ ВЫВОДИТЬСЯ В ЛОГАХ
-    s.log.Info("   PUT  /api/users/")          // ← БУДЕТ ВЫВОДИТЬСЯ В ЛОГАХ
-    s.log.Info("   PATCH /api/users/toggle/") // ← БУДЕТ ВЫВОДИТЬСЯ В ЛОГАХ
+    s.log.Info("   POST /api/users")
+    s.log.Info("   PUT  /api/users/{id}")
+    s.log.Info("   PATCH /api/users/{id}/toggle")
     s.log.Info("   GET  /api/audit")
     s.log.Info("🌍 Environment: %s", s.config.Env)
 
