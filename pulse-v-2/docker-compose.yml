@@ -1,18 +1,18 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: ${PROJECT_NAME}-postgres
+    container_name: pulse-v-2-postgres
     environment:
       POSTGRES_USER: ${DB_USER:-pulse_user}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-pulse_pass}
       POSTGRES_DB: ${DB_NAME:-pulse_db}
     volumes:
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ${PROJECT_NAME}_postgres_data:/var/lib/postgresql/data
+      - pulse-v-2_postgres_data:/var/lib/postgresql/data
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     networks:
-      - ${PROJECT_NAME}_network
+      - pulse-v-2_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-pulse_user}"]
       interval: 10s
@@ -24,7 +24,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: ${PROJECT_NAME}-backend
+    container_name: pulse-v-2-backend
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
@@ -39,25 +39,25 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - ${PROJECT_NAME}_network
+      - pulse-v-2_network
     restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: ${PROJECT_NAME}-frontend
+    container_name: pulse-v-2-frontend
     ports:
       - "${FRONTEND_PORT:-8081}:80"
     depends_on:
       - backend
     networks:
-      - ${PROJECT_NAME}_network
+      - pulse-v-2_network
     restart: unless-stopped
 
   nginx:
     image: nginx:alpine
-    container_name: ${PROJECT_NAME}-nginx
+    container_name: pulse-v-2-nginx
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
@@ -69,12 +69,12 @@ services:
       - frontend
       - backend
     networks:
-      - ${PROJECT_NAME}_network
+      - pulse-v-2_network
     restart: unless-stopped
 
 networks:
-  ${PROJECT_NAME}_network:
+  pulse-v-2_network:
     driver: bridge
 
 volumes:
-  ${PROJECT_NAME}_postgres_data:
+  pulse-v-2_postgres_data:
