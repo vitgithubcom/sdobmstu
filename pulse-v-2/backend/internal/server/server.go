@@ -89,27 +89,27 @@ func (s *Server) Run() error {
     authMiddleware := middleware.AuthMiddleware(authService)
 
     // KPI
-    mux.HandleFunc("GET /api/kpi", authMiddleware(http.HandlerFunc(kpiHandler.GetAll)))
-    mux.HandleFunc("GET /api/kpi/{id}", authMiddleware(http.HandlerFunc(kpiHandler.GetByID)))
-    mux.HandleFunc("GET /api/chart", authMiddleware(http.HandlerFunc(kpiHandler.GetChartData)))
+    mux.Handle("GET /api/kpi", authMiddleware(http.HandlerFunc(kpiHandler.GetAll)))
+    mux.Handle("GET /api/kpi/{id}", authMiddleware(http.HandlerFunc(kpiHandler.GetByID)))
+    mux.Handle("GET /api/chart", authMiddleware(http.HandlerFunc(kpiHandler.GetChartData)))
 
     // Alerts
-    mux.HandleFunc("GET /api/alerts", authMiddleware(http.HandlerFunc(alertsHandler.GetAll)))
+    mux.Handle("GET /api/alerts", authMiddleware(http.HandlerFunc(alertsHandler.GetAll)))
 
     // Integrations
-    mux.HandleFunc("GET /api/integrations", authMiddleware(http.HandlerFunc(integrationsHandler.GetAll)))
+    mux.Handle("GET /api/integrations", authMiddleware(http.HandlerFunc(integrationsHandler.GetAll)))
 
     // ---- Users ----
-    mux.HandleFunc("GET /api/users", authMiddleware(http.HandlerFunc(userHandler.GetAll)))
-    mux.HandleFunc("GET /api/users/profile", authMiddleware(http.HandlerFunc(userHandler.GetProfile)))
-    mux.HandleFunc("PUT /api/users/profile", authMiddleware(http.HandlerFunc(userHandler.UpdateProfile)))
-    mux.HandleFunc("PUT /api/users/password", authMiddleware(http.HandlerFunc(userHandler.ChangePassword)))
-    mux.HandleFunc("POST /api/users", authMiddleware(http.HandlerFunc(userHandler.Create)))
-    mux.HandleFunc("PUT /api/users/{id}", authMiddleware(http.HandlerFunc(userHandler.Update)))
-    mux.HandleFunc("PATCH /api/users/{id}/toggle", authMiddleware(http.HandlerFunc(userHandler.ToggleActive)))
+    mux.Handle("GET /api/users", authMiddleware(http.HandlerFunc(userHandler.GetAll)))
+    mux.Handle("GET /api/users/profile", authMiddleware(http.HandlerFunc(userHandler.GetProfile)))
+    mux.Handle("PUT /api/users/profile", authMiddleware(http.HandlerFunc(userHandler.UpdateProfile)))
+    mux.Handle("PUT /api/users/password", authMiddleware(http.HandlerFunc(userHandler.ChangePassword)))
+    mux.Handle("POST /api/users", authMiddleware(http.HandlerFunc(userHandler.Create)))          // ← mux.Handle
+    mux.Handle("PUT /api/users/{id}", authMiddleware(http.HandlerFunc(userHandler.Update)))       // ← mux.Handle
+    mux.Handle("PATCH /api/users/{id}/toggle", authMiddleware(http.HandlerFunc(userHandler.ToggleActive))) // ← mux.Handle
 
     // Audit
-    mux.HandleFunc("GET /api/audit", authMiddleware(http.HandlerFunc(auditHandler.GetAll)))
+    mux.Handle("GET /api/audit", authMiddleware(http.HandlerFunc(auditHandler.GetAll)))
 
     // ---- Обёртка с CORS и логгером ----
     handler := middleware.CORS(mux)
