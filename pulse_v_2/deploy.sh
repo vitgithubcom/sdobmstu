@@ -49,7 +49,7 @@ cat > .env << EOF
 DOMAIN=$DOMAIN
 
 # Имя проекта (используется для контейнеров, сети, volume)
-PROJECT_NAME=pulse_v_2
+PROJECT_NAME=pulse-v-2
 
 # Порты
 BACKEND_PORT=8083
@@ -92,8 +92,8 @@ fi
 
 echo -e "${YELLOW}🛠️  Сборка и запуск контейнеров...${NC}"
 
-docker compose --env-file .env -p pulse_v_2 build --no-cache
-docker compose --env-file .env -p pulse_v_2 up -d
+docker compose --env-file .env -p pulse-v-2 build --no-cache
+docker compose --env-file .env -p pulse-v-2 up -d
 
 # ==========================================
 # 5. ПРОВЕРКА
@@ -118,7 +118,7 @@ if echo "$RESPONSE" | grep -q "token"; then
     echo -e "${GREEN}========================================${NC}"
 else
     echo -e "${YELLOW}⚠️  API не отвечает. Проверьте логи:${NC}"
-    echo "  docker compose -p pulse_v_2 logs backend --tail=30"
+    echo "  docker compose -p pulse-v-2 logs backend --tail=30"
 fi
 
 echo ""
