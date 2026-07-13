@@ -79,37 +79,36 @@ func (s *Server) Run() error {
     userHandler := handlers.NewUserHandler(userService, auditRepo)
     auditHandler := handlers.NewAuditHandler(auditRepo)
 
-    // ===== НАСТРОЙКА РОУТОВ =====
+    // ===== НАСТРОЙКА РОУТОВ (БЕЗ МЕТОДОВ) =====
     mux := http.NewServeMux()
 
     // ---- Публичные (без авторизации) ----
-    mux.HandleFunc("POST /api/auth/login", authHandler.Login)
+    mux.HandleFunc("/api/auth/login", authHandler.Login)
 
     // ---- Защищённые (с авторизацией) ----
     authMiddleware := middleware.AuthMiddleware(authService)
 
     // KPI
-    mux.Handle("GET /api/kpi", authMiddleware(http.HandlerFunc(kpiHandler.GetAll)))
-    mux.Handle("GET /api/kpi/{id}", authMiddleware(http.HandlerFunc(kpiHandler.GetByID)))
-    mux.Handle("GET /api/chart", authMiddleware(http.HandlerFunc(kpiHandler.GetChartData)))
+    mux.Handle("/api/kpi", authMiddleware(http.HandlerFunc(kpiHandler.GetAll)))
+    mux.Handle("/api/kpi/", authMiddleware(http.HandlerFunc(kpiHandler.GetByID)))
+    mux.Handle("/api/chart", authMiddleware(http.HandlerFunc(kpiHandler.GetChartData)))
 
     // Alerts
-    mux.Handle("GET /api/alerts", authMiddleware(http.HandlerFunc(alertsHandler.GetAll)))
+    mux.Handle("/api/alerts", authMiddleware(http.HandlerFunc(alertsHandler.GetAll)))
 
     // Integrations
-    mux.Handle("GET /api/integrations", authMiddleware(http.HandlerFunc(integrationsHandler.GetAll)))
+    mux.Handle("/api/integrations", authMiddleware(http.HandlerFunc(integrationsHandler.GetAll)))
 
-    // ---- Users ----
-    mux.Handle("GET /api/users", authMiddleware(http.HandlerFunc(userHandler.GetAll)))
-    mux.Handle("GET /api/users/profile", authMiddleware(http.HandlerFunc(userHandler.GetProfile)))
-    mux.Handle("PUT /api/users/profile", authMiddleware(http.HandlerFunc(userHandler.UpdateProfile)))
-    mux.Handle("PUT /api/users/password", authMiddleware(http.HandlerFunc(userHandler.ChangePassword)))
-    mux.Handle("POST /api/users", authMiddleware(http.HandlerFunc(userHandler.Create)))          // ← mux.Handle
-    mux.Handle("PUT /api/users/{id}", authMiddleware(http.HandlerFunc(userHandler.Update)))       // ← mux.Handle
-    mux.Handle("PATCH /api/users/{id}/toggle", authMiddleware(http.HandlerFunc(userHandler.ToggleActive))) // ← mux.Handle
+    // ---- Users (БЕЗ МЕТОДОВ, разные пути) ----
+    mux.Handle("/api/users", authMiddleware(http.HandlerFunc(userHandler.GetAll)))
+    mux.Handle("/api/users/profile", authMiddleware(http.HandlerFunc(userHandler.GetProfile)))
+    mux.Handle("/api/users/password", authMiddleware(http.HandlerFunc(userHandler.ChangePassword)))
+    mux.Handle("/api/users/create", authMiddleware(http.HandlerFunc(userHandler.Create)))        // ← новый путь
+    mux.Handle("/api/users/update", authMiddleware(http.HandlerFunc(userHandler.Update)))        // ← новый путь
+    mux.Handle("/api/users/toggle", authMiddleware(http.HandlerFunc(userHandler.ToggleActive)))  // ← новый путь
 
     // Audit
-    mux.Handle("GET /api/audit", authMiddleware(http.HandlerFunc(auditHandler.GetAll)))
+    mux.Handle("/api/audit", authMiddleware(http.HandlerFunc(auditHandler.GetAll)))
 
     // ---- Обёртка с CORS и логгером ----
     handler := middleware.CORS(mux)
@@ -121,17 +120,16 @@ func (s *Server) Run() error {
     s.log.Info("📊 API endpoints:")
     s.log.Info("   POST /api/auth/login")
     s.log.Info("   GET  /api/kpi")
-    s.log.Info("   GET  /api/kpi/{id}")
+    s.log.Info("   GET  /api/kpi/")
     s.log.Info("   GET  /api/chart")
     s.log.Info("   GET  /api/alerts")
     s.log.Info("   GET  /api/integrations")
     s.log.Info("   GET  /api/users")
     s.log.Info("   GET  /api/users/profile")
-    s.log.Info("   PUT  /api/users/profile")
     s.log.Info("   PUT  /api/users/password")
-    s.log.Info("   POST /api/users")
-    s.log.Info("   PUT  /api/users/{id}")
-    s.log.Info("   PATCH /api/users/{id}/toggle")
+    s.log.Info("   POST /api/users/create")        // ← новый путь
+    s.log.Info("   PUT  /api/users/update")         // ← новый путь
+    s.log.Info("   PATCH /api/users/toggle")        // ← новый путь
     s.log.Info("   GET  /api/audit")
     s.log.Info("🌍 Environment: %s", s.config.Env)
 

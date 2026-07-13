@@ -6,8 +6,6 @@ import (
     "pulse-backend/internal/domain"
     "pulse-backend/internal/middleware"
     "pulse-backend/internal/service"
-    "strconv"
-    "strings"
 )
 
 type UserHandler struct {
@@ -90,6 +88,7 @@ func (h *UserHandler) ChangePassword(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(map[string]string{"message": "Пароль успешно изменён"})
 }
 
+// ===== Create — POST /api/users/create =====
 func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
     var req struct {
         Username string `json:"username"`
@@ -124,15 +123,10 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(user)
 }
 
+// ===== Update — PUT /api/users/update =====
 func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
-    idStr := strings.TrimPrefix(r.URL.Path, "/api/users/")
-    id, err := strconv.Atoi(idStr)
-    if err != nil {
-        http.Error(w, "Invalid ID", http.StatusBadRequest)
-        return
-    }
-
     var req struct {
+        ID       int    `json:"id"`
         Email    string `json:"email"`
         FullName string `json:"full_name"`
         Role     string `json:"role"`
@@ -142,7 +136,7 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    user, err := h.userService.GetByID(id)
+    user, err := h.userService.GetByID(req.ID)
     if err != nil || user == nil {
         http.Error(w, "User not found", http.StatusNotFound)
         return
@@ -165,16 +159,10 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(user)
 }
 
+// ===== ToggleActive — PATCH /api/users/toggle =====
 func (h *UserHandler) ToggleActive(w http.ResponseWriter, r *http.Request) {
-    idStr := strings.TrimPrefix(r.URL.Path, "/api/users/")
-    idStr = strings.TrimSuffix(idStr, "/toggle")
-    id, err := strconv.Atoi(idStr)
-    if err != nil {
-        http.Error(w, "Invalid ID", http.StatusBadRequest)
-        return
-    }
-
     var req struct {
+        ID       int  `json:"id"`
         IsActive bool `json:"is_active"`
     }
     if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -182,7 +170,7 @@ func (h *UserHandler) ToggleActive(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    if err := h.userService.ToggleActive(id, req.IsActive); err != nil {
+    if err := h.userService.ToggleActive(req.ID, req.IsActive); err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
