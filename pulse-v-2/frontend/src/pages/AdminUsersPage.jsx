@@ -46,12 +46,10 @@ function AdminUsersPage() {
     }
   }
 
-  // ===== СОЗДАНИЕ =====
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
       if (editingId) {
-        // Обновление
         await api.put('/users/update', {
           id: editingId,
           email: formData.email,
@@ -59,7 +57,6 @@ function AdminUsersPage() {
           role: formData.role,
         })
       } else {
-        // Создание
         await api.post('/users/create', {
           username: formData.username,
           email: formData.email,
@@ -89,19 +86,17 @@ function AdminUsersPage() {
     setShowModal(true)
   }
 
-  // ===== УДАЛЕНИЕ =====
+  // ===== ИСПРАВЛЕННОЕ УДАЛЕНИЕ =====
   const handleDelete = async (id) => {
     if (!confirm('Удалить пользователя?')) return
     try {
-      // В вашем бэкенде может не быть DELETE — если нет, пропустите
-      await api.delete(`/users/${id}`)
+      await api.delete('/users/delete', { data: { id } })
       fetchUsers()
     } catch (error) {
-      alert('Ошибка удаления')
+      alert(error.response?.data?.error || 'Ошибка удаления')
     }
   }
 
-  // ===== БЛОКИРОВКА/РАЗБЛОКИРОВКА =====
   const handleToggleActive = async (id, isActive) => {
     try {
       await api.patch('/users/toggle', {
@@ -200,7 +195,6 @@ function AdminUsersPage() {
         </div>
       </div>
 
-      {/* Модальное окно */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full">
