@@ -79,7 +79,7 @@ func (s *Server) Run() error {
     userHandler := handlers.NewUserHandler(userService, auditRepo)
     auditHandler := handlers.NewAuditHandler(auditRepo)
 
-    // ===== НАСТРОЙКА РОУТОВ (БЕЗ МЕТОДОВ В ПУТИ) =====
+    // ===== НАСТРОЙКА РОУТОВ =====
     mux := http.NewServeMux()
 
     // ---- Публичные (без авторизации) ----
@@ -99,10 +99,13 @@ func (s *Server) Run() error {
     // Integrations
     mux.Handle("/api/integrations", authMiddleware(http.HandlerFunc(integrationsHandler.GetAll)))
 
-    // Users
+    // ---- Users ----
     mux.Handle("/api/users", authMiddleware(http.HandlerFunc(userHandler.GetAll)))
     mux.Handle("/api/users/profile", authMiddleware(http.HandlerFunc(userHandler.GetProfile)))
     mux.Handle("/api/users/password", authMiddleware(http.HandlerFunc(userHandler.ChangePassword)))
+    mux.Handle("POST /api/users", authMiddleware(http.HandlerFunc(userHandler.Create)))                    // ← ДОБАВЛЕНО
+    mux.Handle("PUT /api/users/", authMiddleware(http.HandlerFunc(userHandler.Update)))                     // ← ДОБАВЛЕНО
+    mux.Handle("PATCH /api/users/toggle/", authMiddleware(http.HandlerFunc(userHandler.ToggleActive)))      // ← ДОБАВЛЕНО
 
     // Audit
     mux.Handle("/api/audit", authMiddleware(http.HandlerFunc(auditHandler.GetAll)))
@@ -121,6 +124,11 @@ func (s *Server) Run() error {
     s.log.Info("   GET  /api/alerts")
     s.log.Info("   GET  /api/integrations")
     s.log.Info("   GET  /api/users")
+    s.log.Info("   GET  /api/users/profile")
+    s.log.Info("   PUT  /api/users/password")
+    s.log.Info("   POST /api/users")           // ← БУДЕТ ВЫВОДИТЬСЯ В ЛОГАХ
+    s.log.Info("   PUT  /api/users/")          // ← БУДЕТ ВЫВОДИТЬСЯ В ЛОГАХ
+    s.log.Info("   PATCH /api/users/toggle/") // ← БУДЕТ ВЫВОДИТЬСЯ В ЛОГАХ
     s.log.Info("   GET  /api/audit")
     s.log.Info("🌍 Environment: %s", s.config.Env)
 
