@@ -25,7 +25,6 @@ func (s *UserService) GetByID(id int) (*domain.User, error) {
 }
 
 func (s *UserService) Create(user *domain.User, password string) error {
-    // Проверка существования
     existing, _ := s.repo.FindByUsername(user.Username)
     if existing != nil {
         return errors.New("пользователь с таким логином уже существует")
@@ -35,14 +34,12 @@ func (s *UserService) Create(user *domain.User, password string) error {
         return errors.New("пользователь с таким email уже существует")
     }
 
-    // Хеширование пароля
     hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
     if err != nil {
         return err
     }
     user.PasswordHash = string(hash)
 
-    // Создаём пользователя (id и created_at заполнятся в репозитории)
     return s.repo.Create(user)
 }
 
@@ -70,4 +67,9 @@ func (s *UserService) UpdatePassword(id int, oldPassword, newPassword string) er
 
 func (s *UserService) ToggleActive(id int, isActive bool) error {
     return s.repo.ToggleActive(id, isActive)
+}
+
+// ===== DELETE =====
+func (s *UserService) Delete(id int) error {
+    return s.repo.Delete(id)
 }

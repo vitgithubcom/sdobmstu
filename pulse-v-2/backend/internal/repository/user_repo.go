@@ -109,7 +109,6 @@ func (r *UserRepository) GetAll() ([]domain.User, error) {
     return users, nil
 }
 
-// ===== CREATE — с возвратом id и created_at =====
 func (r *UserRepository) Create(user *domain.User) error {
     err := r.db.QueryRow(`
         INSERT INTO users (username, email, password_hash, full_name, role)
@@ -149,4 +148,17 @@ func (r *UserRepository) UpdateLastLogin(id int) error {
         UPDATE users SET last_login=CURRENT_TIMESTAMP WHERE id=$1
     `, id)
     return err
+}
+
+// ===== DELETE =====
+func (r *UserRepository) Delete(id int) error {
+    result, err := r.db.Exec(`DELETE FROM users WHERE id = $1`, id)
+    if err != nil {
+        return err
+    }
+    rowsAffected, _ := result.RowsAffected()
+    if rowsAffected == 0 {
+        return sql.ErrNoRows
+    }
+    return nil
 }

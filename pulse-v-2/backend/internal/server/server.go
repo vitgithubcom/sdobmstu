@@ -99,13 +99,14 @@ func (s *Server) Run() error {
     // Integrations
     mux.Handle("/api/integrations", authMiddleware(http.HandlerFunc(integrationsHandler.GetAll)))
 
-    // ---- Users (БЕЗ МЕТОДОВ, разные пути) ----
+    // ---- Users ----
     mux.Handle("/api/users", authMiddleware(http.HandlerFunc(userHandler.GetAll)))
     mux.Handle("/api/users/profile", authMiddleware(http.HandlerFunc(userHandler.GetProfile)))
     mux.Handle("/api/users/password", authMiddleware(http.HandlerFunc(userHandler.ChangePassword)))
-    mux.Handle("/api/users/create", authMiddleware(http.HandlerFunc(userHandler.Create)))        // ← новый путь
-    mux.Handle("/api/users/update", authMiddleware(http.HandlerFunc(userHandler.Update)))        // ← новый путь
-    mux.Handle("/api/users/toggle", authMiddleware(http.HandlerFunc(userHandler.ToggleActive)))  // ← новый путь
+    mux.Handle("/api/users/create", authMiddleware(http.HandlerFunc(userHandler.Create)))
+    mux.Handle("/api/users/update", authMiddleware(http.HandlerFunc(userHandler.Update)))
+    mux.Handle("/api/users/toggle", authMiddleware(http.HandlerFunc(userHandler.ToggleActive)))
+    mux.Handle("/api/users/delete", authMiddleware(http.HandlerFunc(userHandler.Delete)))  // ← ДОБАВЛЕНО
 
     // Audit
     mux.Handle("/api/audit", authMiddleware(http.HandlerFunc(auditHandler.GetAll)))
@@ -127,9 +128,10 @@ func (s *Server) Run() error {
     s.log.Info("   GET  /api/users")
     s.log.Info("   GET  /api/users/profile")
     s.log.Info("   PUT  /api/users/password")
-    s.log.Info("   POST /api/users/create")        // ← новый путь
-    s.log.Info("   PUT  /api/users/update")         // ← новый путь
-    s.log.Info("   PATCH /api/users/toggle")        // ← новый путь
+    s.log.Info("   POST /api/users/create")
+    s.log.Info("   PUT  /api/users/update")
+    s.log.Info("   PATCH /api/users/toggle")
+    s.log.Info("   DELETE /api/users/delete")    // ← ДОБАВЛЕНО
     s.log.Info("   GET  /api/audit")
     s.log.Info("🌍 Environment: %s", s.config.Env)
 
