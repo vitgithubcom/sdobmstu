@@ -131,7 +131,7 @@ func (s *Server) Run() error {
     s.log.Info("   POST /api/users/create")
     s.log.Info("   PUT  /api/users/update")
     s.log.Info("   PATCH /api/users/toggle")
-    s.log.Info("   DELETE /api/users/delete")    // ← ДОБАВЛЕНО
+    s.log.Info("   DELETE /api/users/delete")    // ← ДОБАВЛЕНО2
     s.log.Info("   GET  /api/audit")
     s.log.Info("🌍 Environment: %s", s.config.Env)
 
