@@ -56,6 +56,9 @@ func main() {
 func handleUser(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 
+	// 🔴 СИМУЛЯЦИЯ ТОРМОЗОВ - 500 мс задержки
+	time.Sleep(500 * time.Millisecond)
+
 	// Извлекаем ID из URL
 	idStr := r.URL.Path[len("/users/"):]
 	id, err := strconv.Atoi(idStr)
