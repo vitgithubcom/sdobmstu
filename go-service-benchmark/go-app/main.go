@@ -1,4 +1,3 @@
-cat > go-app/main.go << 'EOF'
 package main
 
 import (
@@ -127,4 +126,3 @@ func handleMetrics(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(metrics)
 }
-EOF
