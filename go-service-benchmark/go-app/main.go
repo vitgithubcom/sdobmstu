@@ -32,8 +32,11 @@ func main() {
 	}
 
 	// Настройка пула соединений
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(10)
+		// 🔴 СИМУЛЯЦИЯ ПРОБЛЕМЫ: ОЧЕНЬ МАЛЕНЬКИЙ ПУЛ
+		db.SetMaxOpenConns(2)
+		db.SetMaxIdleConns(1)
+	//db.SetMaxOpenConns(25)
+	//db.SetMaxIdleConns(10)
 	db.SetConnMaxLifetime(5 * time.Minute)
 
 	// Проверка подключения
@@ -56,8 +59,8 @@ func main() {
 func handleUser(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 
-	// 🔴 СИМУЛЯЦИЯ ТОРМОЗОВ - 500 мс задержки
-	time.Sleep(500 * time.Millisecond)
+		// 🔴 СИМУЛЯЦИЯ ТОРМОЗОВ - 500 мс задержки
+		//time.Sleep(500 * time.Millisecond)
 
 	// Извлекаем ID из URL
 	idStr := r.URL.Path[len("/users/"):]
