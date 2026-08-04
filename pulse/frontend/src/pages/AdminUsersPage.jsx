@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import Header from '../components/Layout/Header'
+import LoadingSpinner from '../components/Common/LoadingSpinner'
 import api from '../api/client'
 
 function AdminUsersPage() {
@@ -19,6 +20,15 @@ function AdminUsersPage() {
     role: 'viewer',
   })
   const [editingId, setEditingId] = useState(null)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(
+        new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+      )
+    }, 60000)
+    return () => clearInterval(timer)
+  }, [])
 
   useEffect(() => {
     fetchUsers()
@@ -40,9 +50,20 @@ function AdminUsersPage() {
     e.preventDefault()
     try {
       if (editingId) {
-        await api.put(`/users/${editingId}`, formData)
+        await api.put('/users/update', {
+          id: editingId,
+          email: formData.email,
+          full_name: formData.full_name,
+          role: formData.role,
+        })
       } else {
-        await api.post('/users', formData)
+        await api.post('/users/create', {
+          username: formData.username,
+          email: formData.email,
+          full_name: formData.full_name,
+          password: formData.password,
+          role: formData.role,
+        })
       }
       setShowModal(false)
       setFormData({ username: '', email: '', full_name: '', password: '', role: 'viewer' })
@@ -65,19 +86,23 @@ function AdminUsersPage() {
     setShowModal(true)
   }
 
+  // ===== ИСПРАВЛЕННОЕ УДАЛЕНИЕ =====
   const handleDelete = async (id) => {
     if (!confirm('Удалить пользователя?')) return
     try {
-      await api.delete(`/users/${id}`)
+      await api.delete('/users/delete', { data: { id } })
       fetchUsers()
     } catch (error) {
-      alert('Ошибка удаления')
+      alert(error.response?.data?.error || 'Ошибка удаления')
     }
   }
 
   const handleToggleActive = async (id, isActive) => {
     try {
-      await api.patch(`/users/${id}/toggle`, { is_active: !isActive })
+      await api.patch('/users/toggle', {
+        id: id,
+        is_active: !isActive,
+      })
       fetchUsers()
     } catch (error) {
       alert('Ошибка изменения статуса')
@@ -85,11 +110,7 @@ function AdminUsersPage() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    )
+    return <LoadingSpinner fullScreen />
   }
 
   return (
@@ -174,7 +195,6 @@ function AdminUsersPage() {
         </div>
       </div>
 
-      {/* Модальное окно */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full">
@@ -190,6 +210,7 @@ function AdminUsersPage() {
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
                   required
+                  disabled={editingId}
                 />
               </div>
               <div>
