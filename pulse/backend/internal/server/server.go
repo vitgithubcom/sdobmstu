@@ -79,7 +79,7 @@ func (s *Server) Run() error {
     userHandler := handlers.NewUserHandler(userService, auditRepo)
     auditHandler := handlers.NewAuditHandler(auditRepo)
 
-    // ===== НАСТРОЙКА РОУТОВ (БЕЗ МЕТОДОВ В ПУТИ) =====
+    // ===== НАСТРОЙКА РОУТОВ (БЕЗ МЕТОДОВ) =====
     mux := http.NewServeMux()
 
     // ---- Публичные (без авторизации) ----
@@ -90,7 +90,7 @@ func (s *Server) Run() error {
 
     // KPI
     mux.Handle("/api/kpi", authMiddleware(http.HandlerFunc(kpiHandler.GetAll)))
-    mux.Handle("/api/kpi/", authMiddleware(http.HandlerFunc(kpiHandler.GetByID))) // с / в конце для {id}
+    mux.Handle("/api/kpi/", authMiddleware(http.HandlerFunc(kpiHandler.GetByID)))
     mux.Handle("/api/chart", authMiddleware(http.HandlerFunc(kpiHandler.GetChartData)))
 
     // Alerts
@@ -99,10 +99,14 @@ func (s *Server) Run() error {
     // Integrations
     mux.Handle("/api/integrations", authMiddleware(http.HandlerFunc(integrationsHandler.GetAll)))
 
-    // Users
+    // ---- Users ----
     mux.Handle("/api/users", authMiddleware(http.HandlerFunc(userHandler.GetAll)))
     mux.Handle("/api/users/profile", authMiddleware(http.HandlerFunc(userHandler.GetProfile)))
     mux.Handle("/api/users/password", authMiddleware(http.HandlerFunc(userHandler.ChangePassword)))
+    mux.Handle("/api/users/create", authMiddleware(http.HandlerFunc(userHandler.Create)))
+    mux.Handle("/api/users/update", authMiddleware(http.HandlerFunc(userHandler.Update)))
+    mux.Handle("/api/users/toggle", authMiddleware(http.HandlerFunc(userHandler.ToggleActive)))
+    mux.Handle("/api/users/delete", authMiddleware(http.HandlerFunc(userHandler.Delete)))  // ← ДОБАВЛЕНО
 
     // Audit
     mux.Handle("/api/audit", authMiddleware(http.HandlerFunc(auditHandler.GetAll)))
@@ -117,10 +121,17 @@ func (s *Server) Run() error {
     s.log.Info("📊 API endpoints:")
     s.log.Info("   POST /api/auth/login")
     s.log.Info("   GET  /api/kpi")
+    s.log.Info("   GET  /api/kpi/")
     s.log.Info("   GET  /api/chart")
     s.log.Info("   GET  /api/alerts")
     s.log.Info("   GET  /api/integrations")
     s.log.Info("   GET  /api/users")
+    s.log.Info("   GET  /api/users/profile")
+    s.log.Info("   PUT  /api/users/password")
+    s.log.Info("   POST /api/users/create")
+    s.log.Info("   PUT  /api/users/update")
+    s.log.Info("   PATCH /api/users/toggle")
+    s.log.Info("   DELETE /api/users/delete")    // ← ДОБАВЛЕНО
     s.log.Info("   GET  /api/audit")
     s.log.Info("🌍 Environment: %s", s.config.Env)
 
