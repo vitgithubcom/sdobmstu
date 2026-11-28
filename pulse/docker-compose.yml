@@ -1,4 +1,28 @@
 services:
+  traefik:
+    image: traefik:v3.7
+    container_name: pulse-traefik
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesresolvers.le.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.le.acme.httpchallenge=true"
+      - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik/letsencrypt:/letsencrypt"
+    networks:
+      - pulse-network
+    restart: unless-stopped
+
   postgres:
     image: postgres:16-alpine
     container_name: pulse-postgres
@@ -9,8 +33,6 @@ services:
     volumes:
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     networks:
       - pulse-network
     healthcheck:
@@ -34,13 +56,17 @@ services:
       JWT_SECRET: ${JWT_SECRET:-super-secret-key}
       PORT: 8082
       GIN_MODE: release
-    ports:
-      - "8082:8082"
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - pulse-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pulse-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.pulse-api.entrypoints=websecure"
+      - "traefik.http.routers.pulse-api.tls.certresolver=le"
+      - "traefik.http.services.pulse-api.loadbalancer.server.port=8082"
     restart: unless-stopped
 
   frontend:
@@ -48,12 +74,17 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: pulse-frontend
-    ports:
-      - "8081:80"
     depends_on:
       - backend
     networks:
       - pulse-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pulse-frontend.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.pulse-frontend.entrypoints=websecure"
+      - "traefik.http.routers.pulse-frontend.tls.certresolver=le"
+      - "traefik.http.routers.pulse-frontend.priority=1"
+      - "traefik.http.services.pulse-frontend.loadbalancer.server.port=80"
     restart: unless-stopped
 
 networks:
